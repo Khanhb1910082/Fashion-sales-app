@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1030769050575",
+    "project_id": "turtle-k-2f11d",
+    "storage_bucket": "turtle-k-2f11d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030769050575:android:317c787280660e7a5648ba",
+        "android_client_info": {
+          "package_name": "com.example.turtle_k"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030769050575-so4rhdh6lbp10peb16oruiccatal7s3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7URb1aGFYKBAWIXITEDdHJ2fDekSDybg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030769050575-so4rhdh6lbp10peb16oruiccatal7s3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
