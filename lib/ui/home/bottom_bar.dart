@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:turtle_k/ui/home/home_view.dart';
-import 'package:turtle_k/ui/notify/notify_view.dart';
-import 'package:turtle_k/ui/product/product_view.dart';
-import 'package:turtle_k/ui/profile/profile_view.dart';
+
+import '../screens.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});

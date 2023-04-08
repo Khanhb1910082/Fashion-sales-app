@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:turtle_k/ui/product/custom_bottom_sheet.dart';
+
+import 'custom_bottom_sheet.dart';
 
 class ProductBottom extends StatelessWidget {
   const ProductBottom({super.key});

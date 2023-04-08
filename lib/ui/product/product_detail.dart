@@ -1,9 +1,9 @@
+import 'package:blackrose/ui/product/product_bottom.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
 
-import 'package:turtle_k/models/product.dart';
-import 'package:turtle_k/ui/home/flash_sale.dart';
-import 'package:turtle_k/ui/product/product_bottom.dart';
+import '../../models/product.dart';
+import '../home/flash_sale.dart';
 
 class ProductDetail extends StatefulWidget {
   const ProductDetail(this.product, {super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
-import 'package:turtle_k/models/product.dart';
 
+import '../../models/product.dart';
 import '../../service/product_service.dart';
 import '../product/product_detail.dart';
 

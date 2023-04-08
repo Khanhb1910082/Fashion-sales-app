@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:turtle_k/models/product.dart';
-import 'package:turtle_k/service/product_service.dart';
+
+import '../../models/product.dart';
 
 class ProductManager with ChangeNotifier {
   List<Product> _items = [];

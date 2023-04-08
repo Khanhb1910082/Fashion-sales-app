@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:turtle_k/models/product.dart';
-import 'package:turtle_k/ui/product/product_detail.dart';
-import 'package:turtle_k/ui/product/productdetaildemo.dart';
 
-import '../../service/product_service.dart';
+import '../../models/product.dart';
+import 'productdetaildemo.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({super.key});

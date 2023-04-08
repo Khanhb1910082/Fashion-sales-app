@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
-import 'package:turtle_k/models/product.dart';
-import 'package:turtle_k/service/product_service.dart';
 
+import '../../models/product.dart';
+import '../../service/product_service.dart';
 import 'product_detail.dart';
 
 class ProductView extends StatefulWidget {
@@ -85,7 +84,7 @@ class _ProductViewState extends State<ProductView> {
                   GridView(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, childAspectRatio: 2 / 3.09),
+                              crossAxisCount: 2, childAspectRatio: 2 / 3.6),
                       children: product
                           .where((item) => item.sex == 'men')
                           .map(buildProduct)
@@ -93,9 +92,17 @@ class _ProductViewState extends State<ProductView> {
                   GridView(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, childAspectRatio: 2 / 3.09),
+                              crossAxisCount: 2, childAspectRatio: 2 / 3.6),
                       children: product
                           .where((item) => item.sex == 'women')
+                          .map(buildProduct)
+                          .toList()),
+                  GridView(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, childAspectRatio: 2 / 3.6),
+                      children: product
+                          .where((item) => item.sex == 'null')
                           .map(buildProduct)
                           .toList()),
                 ]);

@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:turtle_k/ui/home/bottom_bar.dart';
+
+import '../home/bottom_bar.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});

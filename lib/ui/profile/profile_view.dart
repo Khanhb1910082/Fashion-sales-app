@@ -1,6 +1,8 @@
+import 'package:blackrose/ui/profile/profile_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:turtle_k/ui/login/login_view.dart';
+
+import '../login/login_view.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -153,6 +155,39 @@ class ProfileView extends StatelessWidget {
                 ],
               )),
           const SizedBox(height: 10),
+          InkWell(
+            onTap: () {
+              // Navigator.of(context).push(
+              //     MaterialPageRoute(builder: (context) => ProfileDetail(user)));
+            },
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                        child: SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: Icon(
+                              Icons.person_sharp,
+                              color: Colors.cyan,
+                              size: 30,
+                            )),
+                      ),
+                      Text("Thông tin cá nhân"),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.all(5),
             decoration: const BoxDecoration(
@@ -207,16 +242,16 @@ class ProfileView extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: const BoxDecoration(color: Colors.white70),
             child: Center(
               child: GestureDetector(
                 child: const Text(
                   "Đăng xuất",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: Colors.black87),
                 ),
                 onTap: () {
                   Navigator.pushReplacement(

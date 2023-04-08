@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:money_formatter/money_formatter.dart';
-import 'package:turtle_k/ui/product/product_detail.dart';
 
 class FlashSaleWidget extends StatelessWidget {
   const FlashSaleWidget({super.key});

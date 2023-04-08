@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:turtle_k/ui/home/flash_sale.dart';
-import 'package:turtle_k/ui/home/list_items.dart';
-import 'package:turtle_k/ui/shared/image_icon.dart';
+
+import '../shared/image_icon.dart';
+import 'flash_sale.dart';
+import 'list_items.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -18,6 +20,8 @@ class _HomeViewState extends State<HomeView> {
       backgroundColor: Colors.black12,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        systemOverlayStyle:
+            const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
         backgroundColor: const Color.fromARGB(1, 0, 0, 0),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8),
