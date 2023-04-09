@@ -5,7 +5,7 @@ class Product {
   final String describe;
   final int newPrice;
   final int oldPrice;
-  var quantity;
+  final int quantity;
   final String type;
   final bool sale;
   final String sex;
@@ -25,10 +25,10 @@ class Product {
     required this.view,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         'id': id,
         'product_name': productName,
-        'product_url': List.from(['product_url']),
+        'product_url': productUrl,
         'describe': describe,
         'newprice': newPrice,
         'oldprice': oldPrice,
@@ -39,17 +39,17 @@ class Product {
         'view': view,
       };
 
-  static Product fromJson(Map<String, dynamic> json) => Product(
-        id: json['id'],
-        productName: json['product_name'],
-        productUrl: List<String>.from((json['product_url'])),
-        describe: json['describe'],
-        newPrice: json['newprice'],
-        oldPrice: json['oldprice'],
-        quantity: json['quantity'],
-        type: json['type'],
-        sale: json['sale'],
-        sex: json['sex'],
-        view: json['view'],
+  static Product fromMap(Map<String, dynamic> map) => Product(
+        id: map['id'],
+        productName: map['product_name'],
+        productUrl: List<String>.from((map['product_url'])),
+        describe: map['describe'],
+        newPrice: map['newprice'],
+        oldPrice: map['oldprice'],
+        quantity: map['quantity'],
+        type: map['type'],
+        sale: map['sale'],
+        sex: map['sex'],
+        view: map['view'],
       );
 }

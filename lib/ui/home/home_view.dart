@@ -1,3 +1,4 @@
+import 'package:blackrose/service/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +15,12 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    ProductService.readProduct();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +42,7 @@ class _HomeViewState extends State<HomeView> {
               icon: Icon(
                 Icons.search_outlined,
                 size: 25,
-                color: Colors.pink,
+                color: Colors.black54,
               ),
               hintText: 'Nước hoa nữ',
               border: InputBorder.none,

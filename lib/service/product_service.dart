@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 import '../models/product.dart';
 
@@ -8,5 +7,5 @@ class ProductService {
       .collection('products')
       .snapshots()
       .map((snapshot) =>
-          snapshot.docs.map((doc) => Product.fromJson(doc.data())).toList());
+          snapshot.docs.map((doc) => Product.fromMap(doc.data())).toList());
 }

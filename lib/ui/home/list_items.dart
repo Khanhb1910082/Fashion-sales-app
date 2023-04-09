@@ -15,11 +15,11 @@ class ListItemsWidget extends StatefulWidget {
 class _ListItemsWidgetState extends State<ListItemsWidget> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<List<Product>>(
         stream: ProductService.readProduct(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Text(snapshot.hasError.toString());
+            return const Text("Có lỗi xảy ra!");
           } else if (snapshot.hasData) {
             final product = snapshot.data!;
             return GridView(

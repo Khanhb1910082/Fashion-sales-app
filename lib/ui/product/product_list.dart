@@ -25,7 +25,7 @@ class _ProductListState extends State<ProductList> {
   }
 
   void mapItems(QuerySnapshot<Map<String, dynamic>> item) {
-    var list = item.docs.map((doc) => Product.fromJson(doc.data())).toList();
+    var list = item.docs.map((doc) => Product.fromMap(doc.data())).toList();
     setState(() {
       product = list;
     });
@@ -35,12 +35,12 @@ class _ProductListState extends State<ProductList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("San pham"),
+        title: const Text("San pham"),
       ),
       body: GridView.builder(
         itemCount: product.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (context, index) {
           return InkWell(
               onTap: () {

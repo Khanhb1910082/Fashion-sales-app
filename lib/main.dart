@@ -14,8 +14,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'BlackRose',
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+      ),
       home: SplashView(),
     );
   }

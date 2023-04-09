@@ -286,7 +286,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   _buildSubmitField() {
     return ElevatedButton(
-      onPressed: () async {
+      onPressed: () {
         if (!_formKey.currentState!.validate()) {
           return;
         }

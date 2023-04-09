@@ -1,10 +1,17 @@
+import 'package:blackrose/models/product.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_bottom_sheet.dart';
 
-class ProductBottom extends StatelessWidget {
-  const ProductBottom({super.key});
+class ProductBottom extends StatefulWidget {
+  const ProductBottom(this.product, {super.key});
+  final Product product;
 
+  @override
+  State<ProductBottom> createState() => _ProductBottomState();
+}
+
+class _ProductBottomState extends State<ProductBottom> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -33,14 +40,25 @@ class ProductBottom extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.shopping_cart_checkout_outlined),
-                        Text("Thêm vào giỏ"),
-                      ],
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (context) {
+                            return CustomBottomSheet(
+                                widget.product, "Thêm vào giỏ");
+                          });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.shopping_cart_checkout_outlined),
+                          Text("Thêm vào giỏ"),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -52,7 +70,7 @@ class ProductBottom extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     context: context,
                     builder: (context) {
-                      return CustomBottomSheet();
+                      return CustomBottomSheet(widget.product, "Đặt hàng");
                     });
               },
               child: Container(

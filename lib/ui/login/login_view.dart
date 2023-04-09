@@ -212,8 +212,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<User?> _signIn() async {
-    if (!_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    if (_formKey.currentState!.validate()) {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -222,7 +221,11 @@ class _LoginViewState extends State<LoginView> {
           .then((value) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const BottomBar()));
+      }).onError((error, stackTrace) {
+        // ignore: avoid_print
+        print(error.toString());
       });
+      _formKey.currentState!.save();
     }
     return null;
   }
