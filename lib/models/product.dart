@@ -2,6 +2,8 @@ class Product {
   String id;
   final String productName;
   List<String> productUrl;
+  List<String> size;
+  List<String> color;
   final String describe;
   final int newPrice;
   final int oldPrice;
@@ -15,6 +17,8 @@ class Product {
     this.id = '',
     required this.productName,
     required this.productUrl,
+    required this.size,
+    required this.color,
     required this.describe,
     required this.newPrice,
     required this.oldPrice,
@@ -29,6 +33,8 @@ class Product {
         'id': id,
         'product_name': productName,
         'product_url': productUrl,
+        'size': size,
+        'color': color,
         'describe': describe,
         'newprice': newPrice,
         'oldprice': oldPrice,
@@ -43,6 +49,8 @@ class Product {
         id: map['id'],
         productName: map['product_name'],
         productUrl: List<String>.from((map['product_url'])),
+        size: List<String>.from((map['size'])),
+        color: List<String>.from((map['color'])),
         describe: map['describe'],
         newPrice: map['newprice'],
         oldPrice: map['oldprice'],

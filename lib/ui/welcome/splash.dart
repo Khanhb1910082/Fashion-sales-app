@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:blackrose/ui/login/login_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +13,17 @@ class SplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(const Duration(seconds: 1, milliseconds: 500), () {
-      Get.offAll(const BottomBar());
+      if (FirebaseAuth.instance.currentUser != null) {
+        Get.offAll(const BottomBar(0));
+      } else {
+        Get.offAll(const LoginView());
+      }
+
+      // if () {
+      //   Get.offAll(const LoginView());
+      // } else {
+      //   Get.offAll(const BottomBar());
+      // }
     });
     return Scaffold(
       body: Container(

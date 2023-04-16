@@ -17,4 +17,16 @@ class UserService {
         .doc(updateUser.email)
         .update(updateUser.toMap());
   }
+
+  static Future<bool> checkUser() async {
+    final collection = FirebaseFirestore.instance.collection('users');
+    final snapshot =
+        await collection.doc(FirebaseAuth.instance.currentUser!.email).get();
+    final phone = snapshot.get("phone");
+    final address = snapshot.get("address");
+    if (phone == '' || address == '') {
+      return false;
+    }
+    return true;
+  }
 }

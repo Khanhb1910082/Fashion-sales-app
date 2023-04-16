@@ -1,8 +1,12 @@
 import 'package:blackrose/models/product.dart';
 import 'package:blackrose/service/product_service.dart';
 import 'package:blackrose/ui/product/product_detail.dart';
+import 'package:blackrose/ui/product/product_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:provider/provider.dart';
 
 class FlashSaleWidget extends StatefulWidget {
   const FlashSaleWidget({super.key});
@@ -38,6 +42,7 @@ class _FlashSaleWidgetState extends State<FlashSaleWidget> {
   }
 
   Widget _buildFlashSale(Product product) {
+    final isfavorite = Provider.of<ProductManager>(context);
     return SizedBox(
       height: 250,
       width: 180,
@@ -87,7 +92,48 @@ class _FlashSaleWidgetState extends State<FlashSaleWidget> {
                           ),
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Colors.red),
+                      StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection('favoritelist')
+                              .doc(FirebaseAuth.instance.currentUser!.email)
+                              .collection(FirebaseAuth
+                                  .instance.currentUser!.email
+                                  .toString())
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
+                            } else if (snapshot.hasData) {
+                              bool isFavorite = false;
+                              for (int index = 0;
+                                  index < snapshot.data!.docs.length;
+                                  index++) {
+                                if (product.id ==
+                                    snapshot.data!.docs[index].get("id")) {
+                                  isFavorite = true;
+                                  break;
+                                }
+                              }
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isfavorite.setFavorite(product);
+                                  });
+                                },
+                                child: Icon(
+                                  isFavorite
+                                      ? Icons.favorite_sharp
+                                      : Icons.favorite_border_outlined,
+                                  color: Colors.deepOrange,
+                                  size: 28,
+                                ),
+                              );
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                     ],
                   ),
                 ),

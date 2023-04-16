@@ -1,8 +1,11 @@
-import 'package:blackrose/service/product_service.dart';
+import 'package:badges/badges.dart';
+import 'package:blackrose/ui/cart/cart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-
+import 'package:provider/provider.dart';
+import 'package:badges/badges.dart' as badges;
+import '../cart/car_manager.dart';
 import '../shared/image_icon.dart';
 import 'flash_sale.dart';
 import 'list_items.dart';
@@ -16,13 +19,8 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   @override
-  void initState() {
-    ProductService.readProduct();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartManager>(context);
     return Scaffold(
       backgroundColor: Colors.black12,
       extendBodyBehindAppBar: true,
@@ -49,15 +47,40 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(
-              Icons.shopping_cart_outlined,
-              size: 28,
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const CartView()));
+            },
+            child: badges.Badge(
+              position: badges.BadgePosition.topEnd(top: -12, end: -12),
+              showBadge: true,
+              ignorePointer: false,
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const CartView()));
+              },
+              badgeContent: Text('${cartProvider.cartCount}'),
+              badgeAnimation: const BadgeAnimation.scale(
+                animationDuration: Duration(seconds: 1),
+                colorChangeAnimationDuration: Duration(seconds: 1),
+                loopAnimation: false,
+                curve: Curves.fastOutSlowIn,
+                colorChangeAnimationCurve: Curves.easeInCubic,
+              ),
+              badgeStyle: badges.BadgeStyle(
+                badgeColor: Colors.deepOrange,
+                borderRadius: BorderRadius.circular(4),
+                elevation: 0,
+              ),
+              child: const Icon(
+                Icons.shopping_cart_outlined,
+                size: 28,
+              ),
             ),
           ),
-          Padding(
+          const Padding(
               padding: EdgeInsets.only(right: 12),
               child: Icon(Icons.chat_outlined)),
         ],
@@ -82,6 +105,7 @@ class _HomeViewState extends State<HomeView> {
                   const Text(
                     'Danh mục sản phẩm',
                     style: TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -92,17 +116,19 @@ class _HomeViewState extends State<HomeView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: const [
-                            ImageIconWidget(
-                                'assets/icons/category/t-shirt.png', 'Polo'),
-                            ImageIconWidget(
-                                "assets/icons/category/shirt.png", 'Shirt'),
+                            ImageIconWidget('assets/icons/category/t-shirt.png',
+                                'Polo', 't-shirt', 'men'),
+                            ImageIconWidget("assets/icons/category/shirt.png",
+                                'Shirt', 'shirt', 'men'),
                             ImageIconWidget(
                                 "assets/icons/category/trousers.png",
-                                'Quần tây'),
-                            ImageIconWidget(
-                                "assets/icons/category/jean.png", 'Jean'),
-                            ImageIconWidget(
-                                "assets/icons/category/shorts.png", 'Shorts'),
+                                'Quần tây',
+                                'trousers',
+                                'men'),
+                            ImageIconWidget("assets/icons/category/jean.png",
+                                'Jean', 'jean', 'men'),
+                            ImageIconWidget("assets/icons/category/shorts.png",
+                                'Shorts', 'shorts', 'men'),
                           ],
                         ),
                         Padding(
@@ -112,17 +138,26 @@ class _HomeViewState extends State<HomeView> {
                             children: const [
                               ImageIconWidget(
                                   "assets/icons/category/t-shirt_women.png",
-                                  'Thun'),
+                                  'Thun',
+                                  't-shirt',
+                                  'women'),
                               ImageIconWidget(
                                   "assets/icons/category/shirt_women.png",
-                                  'shirt'),
+                                  'shirt',
+                                  'shirt',
+                                  'women'),
                               ImageIconWidget(
                                   "assets/icons/category/trousers_women.png",
-                                  'Quần dài'),
+                                  'Quần dài',
+                                  'trousers',
+                                  'women'),
+                              ImageIconWidget("assets/icons/category/dress.png",
+                                  'Đầm', 'dress', 'women'),
                               ImageIconWidget(
-                                  "assets/icons/category/dress.png", 'Đầm'),
-                              ImageIconWidget(
-                                  "assets/icons/category/skirts.png", 'váy'),
+                                  "assets/icons/category/skirts.png",
+                                  'váy',
+                                  'skirts',
+                                  'women'),
                             ],
                           ),
                         ),

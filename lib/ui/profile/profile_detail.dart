@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/user.dart';
+import '../../service/user_service.dart';
 
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail(this.user, {super.key});
@@ -11,6 +12,7 @@ class ProfileDetail extends StatefulWidget {
 
 class _ProfileDetailState extends State<ProfileDetail> {
   var _emailController = TextEditingController();
+  var _nameController = TextEditingController();
   var _phoneController = TextEditingController();
   var _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -18,6 +20,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
   @override
   void initState() {
     _emailController = TextEditingController(text: widget.user.email);
+    _nameController = TextEditingController(text: widget.user.name);
     _phoneController = TextEditingController(text: widget.user.phone);
     _addressController = TextEditingController(text: widget.user.address);
     super.initState();
@@ -40,6 +43,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 _buidAvataField(width),
                 const SizedBox(height: 10),
                 _buildEmailField(),
+                const SizedBox(height: 5),
+                _buildNameField(),
                 const SizedBox(height: 5),
                 _buildAddressField(),
                 const SizedBox(height: 5),
@@ -72,6 +77,39 @@ class _ProfileDetailState extends State<ProfileDetail> {
       cursorColor: Colors.pink,
       onSaved: (newValue) {
         updateUser = updateUser.copyWith(email: newValue);
+      },
+    );
+  }
+
+  _buildNameField() {
+    return TextFormField(
+      controller: _nameController,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(
+          Icons.person,
+          color: Colors.pink,
+        ),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Tên người dùng",
+        hintStyle: const TextStyle(color: Colors.black45),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none),
+      ),
+      keyboardType: TextInputType.name,
+      cursorColor: Colors.pink,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Vui lòng nhập tên người dùng.";
+        }
+        if (value.length > 40) {
+          return 'Tên người dùng không hợp lệ.';
+        }
+        return null;
+      },
+      onSaved: (newValue) {
+        updateUser = updateUser.copyWith(name: newValue);
       },
     );
   }
@@ -148,7 +186,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
           return;
         }
         _formKey.currentState!.save();
-        //await UserService.updateUser(updateUser);
+        await UserService.updateUser(updateUser);
         if (mounted) {
           Navigator.of(context).pop();
         }
@@ -173,14 +211,16 @@ class _ProfileDetailState extends State<ProfileDetail> {
         width: width / 3.5,
         height: width / 3.5,
         decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(width),
-        ),
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(width),
+            image: const DecorationImage(
+                image: AssetImage("assets/images/profile.jpg"),
+                fit: BoxFit.cover)),
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
             Container(
-                height: width / 10,
+                height: width / 14,
                 width: width / 3.5,
                 decoration: BoxDecoration(
                     color: Colors.white60,
@@ -190,7 +230,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 child: const Center(
                     child: Text(
                   "Sửa",
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700, color: Colors.black),
                 ))),
           ],
         ),

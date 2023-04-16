@@ -1,9 +1,16 @@
+import 'package:blackrose/models/cart.dart';
+import 'package:blackrose/service/cart_service.dart';
+import 'package:blackrose/service/user_service.dart';
+import 'package:blackrose/ui/order/order_now.dart';
+import 'package:blackrose/ui/shared/snack_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
-import '../cart/cart_view.dart';
+import '../cart/car_manager.dart';
+import '../home/bottom_bar.dart';
 
 class CustomBottomSheet extends StatefulWidget {
   const CustomBottomSheet(this.product, this.nameSubmit, {super.key});
@@ -14,17 +21,25 @@ class CustomBottomSheet extends StatefulWidget {
 }
 
 class _CustomBottomSheetState extends State<CustomBottomSheet> {
-  List size = ["S", 'M', 'L', 'XL'];
-
-  List color = ['Đỏ', 'Xanh', 'Cam', 'Hồng'];
   int _selectSize = -1;
   int _selectColor = -1;
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
   int _count = 1;
-
+  late var cart = Cart(
+    id: widget.product.id,
+    productName: widget.product.productName,
+    productUrl: widget.product.productUrl[0],
+    color: '',
+    size: '',
+    payment: false,
+    quantity: 0,
+    newPrice: widget.product.newPrice.toDouble(),
+  );
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width / 10;
+    final cartProvider = Provider.of<CartManager>(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: const BoxDecoration(
@@ -48,10 +63,11 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           Row(
             children: [
               SizedBox(
+                  height: width * 3.5,
                   width: width * 3.5,
                   child:
                       Image.network(widget.product.productUrl[_selectedIndex])),
-              const SizedBox(width: 10),
+              const SizedBox(width: 5),
               SizedBox(
                 height: width * 3.5,
                 width: width * 5,
@@ -88,7 +104,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                         ),
                       ],
                     ),
-                    Text("Sẵn có: ${widget.product.quantity}"),
+                    Text(
+                        "Sẵn có: ${widget.product.quantity - widget.product.view}"),
                   ],
                 ),
               ),
@@ -105,11 +122,12 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                 ),
               ),
               const SizedBox(width: 20),
-              for (int i = 0; i < size.length; i++)
+              for (int i = 0; i < widget.product.color.length; i++)
                 InkWell(
                   onTap: () {
                     setState(() {
                       _selectColor = i;
+                      cart = cart.copyWith(color: widget.product.color[i]);
                     });
                   },
                   child: Container(
@@ -120,12 +138,13 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     decoration: BoxDecoration(
                       color: _selectColor == i
                           ? Colors.pinkAccent
-                          : Color(0xFFF7F8FA),
+                          : const Color(0xFFF7F8FA),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Center(
                       child: Text(
-                        color[i],
+                        widget.product.color[i],
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                             color:
                                 _selectColor == i ? Colors.white : Colors.black,
@@ -148,17 +167,17 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                 ),
               ),
               const SizedBox(width: 30),
-              for (int i = 0; i < size.length; i++)
+              for (int i = 0; i < widget.product.size.length; i++)
                 InkWell(
                   onTap: () {
                     setState(() {
                       _selectSize = i;
+                      cart = cart.copyWith(size: widget.product.size[i]);
                     });
                   },
                   child: Center(
                     child: Container(
-                      height: 30,
-                      width: 30,
+                      height: 33,
                       margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -168,7 +187,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
-                        size[i],
+                        widget.product.size[i],
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color:
@@ -231,7 +250,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
               InkWell(
                 onTap: () {
                   setState(() {
-                    if (_count < widget.product.quantity) {
+                    if (_count <
+                        widget.product.quantity - widget.product.view) {
                       _count++;
                     }
                   });
@@ -275,8 +295,111 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const CartView()));
+              cart = cart.copyWith(quantity: _count);
+
+              if (cart.color != '' &&
+                  cart.size != '' &&
+                  widget.product.quantity != widget.product.view) {
+                if (widget.nameSubmit == "Thêm vào giỏ") {
+                  cartProvider.addToCart(cart.quantity);
+                  Navigator.of(context).pop();
+                  CartService.addCart(cart);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: CustomSnackBar("!! Chúc mừng !!",
+                        "Sản phẩm đã thêm vào giỏ hàng thành công!", "green"),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                  ));
+                } else {
+                  UserService.checkUser().then((value) {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => OrderNow(cart)));
+                  }).onError((error, stackTrace) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Thông tin chưa chính xác"),
+                            content: const Text(
+                              "Cần cập nhật thông tin trước khi đặt hàng",
+                              style: TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.w400),
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  textStyle:
+                                      Theme.of(context).textTheme.labelLarge,
+                                ),
+                                child: const Text(
+                                  'Ok',
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (_) => const BottomBar(3)),
+                                    (route) => false,
+                                  );
+                                },
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  textStyle:
+                                      Theme.of(context).textTheme.labelLarge,
+                                ),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  });
+                }
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      //contentPadding: EdgeInsets.zero,
+                      title: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            "Sản phẩm chưa được chọn",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      shadowColor: Colors.white70,
+                      content: Stack(
+                        children: [
+                          Text(
+                              "Bạn vui lòng chọn màu và kích thước trước khi ${widget.nameSubmit}")
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            ))
+                      ],
+                    );
+                  },
+                );
+              }
             },
             child: Container(
               padding: const EdgeInsets.all(10),

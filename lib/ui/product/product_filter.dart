@@ -1,22 +1,18 @@
-import 'package:blackrose/ui/product/product_manager.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
-import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../../service/product_service.dart';
 import '../product/product_detail.dart';
 
-class ListItemsWidget extends StatefulWidget {
-  const ListItemsWidget({super.key});
-
+class ProductFilterView extends StatefulWidget {
+  const ProductFilterView(this.product, {super.key});
+  final Product product;
   @override
-  State<ListItemsWidget> createState() => _ListItemsWidgetState();
+  State<ProductFilterView> createState() => _ProductFilterViewState();
 }
 
-class _ListItemsWidgetState extends State<ListItemsWidget> {
+class _ProductFilterViewState extends State<ProductFilterView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Product>>(
@@ -30,27 +26,27 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
               padding: const EdgeInsets.only(top: 3),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                // crossAxisSpacing: 0,
-                // mainAxisSpacing: 0,
                 childAspectRatio: 2 / 3.6,
               ),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: product
-                  .where((item) => item.type != 'accessory')
+                  .where((item) =>
+                      item.type == widget.product.type &&
+                      item.id != widget.product.id &&
+                      item.sex == widget.product.sex)
                   .map(buidProduct)
                   .toList(),
             );
           } else {
             return const Center(
-              child: Text("Sản phẩm hiện chưa được trưng bày"),
+              child: Text("Không tìm thấy sản phẩm phù hợp nào!"),
             );
           }
         });
   }
 
   Widget buidProduct(Product product) {
-    final isfavorite = Provider.of<ProductManager>(context);
     return SizedBox(
       height: 370,
       child: Container(
@@ -61,19 +57,27 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
         ),
         child: Column(
           children: [
-            Stack(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProductDetail(product)));
-                  },
-                  child: Image.network(product.productUrl[0],
-                      height: 285, fit: BoxFit.cover),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProductDetail(product)));
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 5),
+                constraints: const BoxConstraints.expand(
+                  width: 250,
+                  height: 290,
                 ),
-                Padding(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(product.productUrl[0]),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: Padding(
                   padding: const EdgeInsets.all(5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,60 +90,18 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
-                          // isFavorite ? "Yêu thích" :
-                          'Hot',
+                          "- 10%",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('favoritelist')
-                              .doc(FirebaseAuth.instance.currentUser!.email)
-                              .collection(FirebaseAuth
-                                  .instance.currentUser!.email
-                                  .toString())
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return Text("Error: ${snapshot.error}");
-                            } else if (snapshot.hasData) {
-                              bool isFavorite = false;
-                              for (int index = 0;
-                                  index < snapshot.data!.docs.length;
-                                  index++) {
-                                if (product.id ==
-                                    snapshot.data!.docs[index].get("id")) {
-                                  isFavorite = true;
-                                  break;
-                                }
-                              }
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isfavorite.setFavorite(product);
-                                  });
-                                },
-                                child: Icon(
-                                  isFavorite
-                                      ? Icons.favorite_sharp
-                                      : Icons.favorite_border_outlined,
-                                  color: Colors.deepOrange,
-                                  size: 28,
-                                ),
-                              );
-                            } else {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                          }),
+                      const Icon(Icons.favorite_border, color: Colors.red),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6),

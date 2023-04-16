@@ -79,8 +79,6 @@ class _RegisterViewState extends State<RegisterView> {
                               const SizedBox(height: 10),
                               _buildEmailField(),
                               const SizedBox(height: 10),
-                              // _buildPhoneField(),
-                              // const SizedBox(height: 10),
                               _buildPasswordField(),
                               const SizedBox(height: 10),
                               _buildConfirmPasswordField(),
@@ -196,39 +194,6 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
-  // _buildPhoneField() {
-  //   return TextFormField(
-  //     controller: _phoneController,
-  //     decoration: InputDecoration(
-  //       prefixIcon: const Icon(
-  //         Icons.phone,
-  //         color: Colors.pink,
-  //       ),
-  //       fillColor: Colors.white,
-  //       filled: true,
-  //       hintText: "Số điện thoại",
-  //       hintStyle: const TextStyle(color: Colors.black45),
-  //       border: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(30),
-  //           borderSide: BorderSide.none),
-  //     ),
-  //     keyboardType: TextInputType.phone,
-  //     cursorColor: Colors.pink,
-  //     validator: (value) {
-  //       if (value!.isEmpty) {
-  //         return "Vui lòng nhập số điện thoại.";
-  //       }
-  //       if (value.length < 9 || value.length > 14) {
-  //         return 'Số điện thoại không hợp lệ.';
-  //       }
-  //       return null;
-  //     },
-  //     onSaved: (newValue) {
-  //       user = user.copyWith(phone: newValue);
-  //     },
-  //   );
-  // }
-
   _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
@@ -290,34 +255,57 @@ class _RegisterViewState extends State<RegisterView> {
         if (!_formKey.currentState!.validate()) {
           return;
         }
-        FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim());
-
-        _formKey.currentState!.save();
-        FirebaseFirestore.instance
-            .collection("users")
-            .doc(_emailController.text)
-            .set(user.toMap());
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Đăng ký thành công'),
-            content: const Text(
-                'Đăng nhập ngay để nhận ngay hàng ngàn sản phẩm được trợ giá'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+        FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: _emailController.text.trim(),
+                password: _passwordController.text.trim())
+            .then((value) {
+          _formKey.currentState!.save();
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(_emailController.text)
+              .set(user.toMap());
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Đăng ký thành công'),
+              content: const Text(
+                  'Đăng nhập ngay để nhận ngay hàng ngàn sản phẩm giảm giá!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const LoginView())),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }).onError((error, stackTrace) {
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Row(
+                children: const [
+                  Icon(
+                    Icons.warning_rounded,
+                    size: 30,
+                    color: Colors.amber,
+                  ),
+                  SizedBox(width: 10),
+                  Text('Email đã tồn tại'),
+                ],
               ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const LoginView())),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+              content: const Text('Bạn hãy thử dùng một địa chỉ Email khác!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        });
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.pinkAccent,

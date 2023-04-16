@@ -220,7 +220,7 @@ class _LoginViewState extends State<LoginView> {
       )
           .then((value) {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const BottomBar()));
+            MaterialPageRoute(builder: (context) => const BottomBar(0)));
       }).onError((error, stackTrace) {
         // ignore: avoid_print
         print(error.toString());

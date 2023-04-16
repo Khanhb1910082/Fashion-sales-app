@@ -3,3 +3,8 @@ export 'product/product_view.dart';
 export 'profile/profile_view.dart';
 export 'notify/notify_view.dart';
 export 'home/bottom_bar.dart';
+export 'product/product_detail.dart';
+export 'product/product_category.dart';
+export 'product/custom_bottom_sheet.dart';
+export 'product/product_filter.dart';
+export 'cart/cart_view.dart';

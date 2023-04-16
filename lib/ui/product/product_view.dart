@@ -1,9 +1,15 @@
+import 'package:badges/badges.dart';
+import 'package:blackrose/ui/cart/car_manager.dart';
+import 'package:blackrose/ui/product/product_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
-
+import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
 import '../../models/product.dart';
 import '../../service/product_service.dart';
-import 'product_detail.dart';
+import '../screens.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -15,6 +21,7 @@ class ProductView extends StatefulWidget {
 class _ProductViewState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartManager>(context);
     return DefaultTabController(
       //animationDuration: Duration.zero,
       length: 3,
@@ -39,15 +46,42 @@ class _ProductViewState extends State<ProductView> {
               ),
             ),
           ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: Icon(
-                Icons.shopping_cart_outlined,
-                size: 28,
+          actions: [
+            InkWell(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const CartView()));
+              },
+              child: badges.Badge(
+                position: badges.BadgePosition.topEnd(top: -12, end: -12),
+                showBadge: true,
+                ignorePointer: false,
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CartView()));
+                },
+                badgeContent: Text('${cartProvider.cartCount}'),
+                badgeAnimation: const BadgeAnimation.scale(
+                  animationDuration: Duration(seconds: 1),
+                  colorChangeAnimationDuration: Duration(seconds: 1),
+                  loopAnimation: false,
+                  curve: Curves.fastOutSlowIn,
+                  colorChangeAnimationCurve: Curves.easeInCubic,
+                ),
+                badgeStyle: badges.BadgeStyle(
+                  badgeColor: Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(4),
+                  elevation: 0,
+                ),
+                child: const Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 28,
+                ),
               ),
             ),
-            Padding(
+            const Padding(
                 padding: EdgeInsets.only(right: 12),
                 child: Icon(Icons.chat_outlined)),
           ],
@@ -115,6 +149,7 @@ class _ProductViewState extends State<ProductView> {
   }
 
   Widget buildProduct(Product product) {
+    final isfavorite = Provider.of<ProductManager>(context);
     return SizedBox(
       height: 370,
       child: Container(
@@ -124,28 +159,21 @@ class _ProductViewState extends State<ProductView> {
           borderRadius: BorderRadius.circular(4),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProductDetail(product)));
-              },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 5),
-                constraints: const BoxConstraints.expand(
-                  width: 250,
-                  height: 290,
+            Stack(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProductDetail(product)));
+                  },
+                  child: Image.network(product.productUrl[0],
+                      height: 295, fit: BoxFit.cover),
                 ),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(product.productUrl[0]),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.all(5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,18 +186,60 @@ class _ProductViewState extends State<ProductView> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
-                          "- 10%",
+                          // isFavorite ? "Yêu thích" :
+                          'Hot',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Colors.red),
+                      StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection('favoritelist')
+                              .doc(FirebaseAuth.instance.currentUser!.email)
+                              .collection(FirebaseAuth
+                                  .instance.currentUser!.email
+                                  .toString())
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
+                            } else if (snapshot.hasData) {
+                              bool isFavorite = false;
+                              for (int index = 0;
+                                  index < snapshot.data!.docs.length;
+                                  index++) {
+                                if (product.id ==
+                                    snapshot.data!.docs[index].get("id")) {
+                                  isFavorite = true;
+                                  break;
+                                }
+                              }
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isfavorite.setFavorite(product);
+                                  });
+                                },
+                                child: Icon(
+                                  isFavorite
+                                      ? Icons.favorite_sharp
+                                      : Icons.favorite_border_outlined,
+                                  color: Colors.deepOrange,
+                                  size: 28,
+                                ),
+                              );
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6),

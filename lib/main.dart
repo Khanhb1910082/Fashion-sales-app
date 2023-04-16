@@ -1,7 +1,11 @@
+import 'package:blackrose/ui/cart/car_manager.dart';
+import 'package:blackrose/ui/order/order_manager.dart';
+import 'package:blackrose/ui/product/product_manager.dart';
 import 'package:blackrose/ui/welcome/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:provider/provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,13 +18,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'BlackRose',
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartManager()),
+        ChangeNotifierProvider(
+          create: (_) => OrderManager(),
+        ),
+        ChangeNotifierProvider(create: (_) => ProductManager())
+      ],
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'BlackRose',
+        theme: ThemeData(
+          primarySwatch: Colors.pink,
+        ),
+        home: const SplashView(),
       ),
-      home: SplashView(),
     );
   }
 }

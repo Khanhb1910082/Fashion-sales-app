@@ -14,13 +14,17 @@ class ProductBottom extends StatefulWidget {
 class _ProductBottomState extends State<ProductBottom> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return BottomAppBar(
       child: Container(
-        height: 50,
+        height: height / 14.5,
         decoration: const BoxDecoration(color: Colors.deepOrange),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
+              width: width * 3 / 5,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
               ),
@@ -28,6 +32,7 @@ class _ProductBottomState extends State<ProductBottom> {
                   color: Colors.green,
                   border: Border(right: BorderSide(color: Colors.deepOrange))),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(5),
@@ -74,12 +79,11 @@ class _ProductBottomState extends State<ProductBottom> {
                     });
               },
               child: Container(
+                width: width * 2 / 5,
                 padding: const EdgeInsets.all(5),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    SizedBox(
-                      width: 80,
-                    ),
                     Text(
                       "Đặt hàng",
                       style: TextStyle(

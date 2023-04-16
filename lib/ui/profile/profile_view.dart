@@ -1,10 +1,18 @@
+import 'package:badges/badges.dart';
 import 'package:blackrose/service/user_service.dart';
+import 'package:blackrose/ui/cart/car_manager.dart';
+import 'package:blackrose/ui/order/order_manager.dart';
+import 'package:blackrose/ui/order/order_success.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
 import '../../models/user.dart';
 import '../login/login_view.dart';
+import '../product/product_manager.dart';
+import '../screens.dart';
+import 'favorite_list.dart';
 import 'profile_detail.dart';
 
 class ProfileView extends StatefulWidget {
@@ -18,20 +26,49 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    final cartProvider = Provider.of<CartManager>(context);
+
     return Scaffold(
       backgroundColor: Colors.black12,
       appBar: AppBar(
           backgroundColor: Colors.pink,
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: Icon(
-                Icons.shopping_cart_outlined,
-                size: 28,
+          actions: [
+            InkWell(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const CartView()));
+              },
+              child: badges.Badge(
+                position: badges.BadgePosition.topEnd(top: -12, end: -12),
+                showBadge: true,
+                ignorePointer: false,
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CartView()));
+                },
+                badgeContent: Text('${cartProvider.cartCount}'),
+                badgeAnimation: const BadgeAnimation.scale(
+                  animationDuration: Duration(seconds: 1),
+                  colorChangeAnimationDuration: Duration(seconds: 1),
+                  loopAnimation: false,
+                  curve: Curves.fastOutSlowIn,
+                  colorChangeAnimationCurve: Curves.easeInCubic,
+                ),
+                badgeStyle: badges.BadgeStyle(
+                  badgeColor: Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(4),
+                  elevation: 0,
+                ),
+                child: const Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 28,
+                ),
               ),
             ),
-            Padding(
-                padding: EdgeInsets.only(right: 12),
+            const Padding(
+                padding: EdgeInsets.only(right: 12, top: 16),
                 child: Icon(Icons.chat_outlined)),
           ],
           bottom: PreferredSize(
@@ -72,19 +109,6 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  // final productsRef = FirebaseFirestore.instance.collection('users');
-  // Future getProduct(String productId) async {
-  //   final productDoc = await productsRef.doc(productId).get();
-  //   final productData = productDoc.data();
-
-  //   final user1 = Users(
-  //       email: productData!['email'],
-  //       name: productData['name'],
-  //       phone: productData['phone'],
-  //       address: productData['address']);
-  //   return user1;
-  // }
-
   Widget _buidAvataField(Users user) {
     double width = MediaQuery.of(context).size.width;
     return Row(
@@ -96,14 +120,12 @@ class _ProfileViewState extends State<ProfileView> {
               width: width / 5,
               height: width / 5,
               decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(width),
-              ),
-              child: const Center(
-                  child: Text(
-                "Sửa",
-                style: TextStyle(fontWeight: FontWeight.w700),
-              )),
+                  color: Colors.blue,
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(width),
+                  image: const DecorationImage(
+                      image: AssetImage("assets/images/profile.jpg"),
+                      fit: BoxFit.cover)),
             ),
           ],
         ),
@@ -140,9 +162,21 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ],
                 )),
-            const Text(
-              "Yêu thích",
-              style: TextStyle(color: Colors.white),
+            Row(
+              children: const [
+                Text(
+                  "BlackRose Pay",
+                  style: TextStyle(color: Colors.white),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Icon(
+                    Icons.done,
+                    size: 20,
+                    color: Colors.green,
+                  ),
+                )
+              ],
             ),
           ],
         )
@@ -151,6 +185,9 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buidUserService(Users user) {
+    final cartProvider = Provider.of<CartManager>(context);
+    final orderProvider = Provider.of<OrderManager>(context);
+    final favoriteCount = Provider.of<ProductManager>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,79 +224,228 @@ class _ProfileViewState extends State<ProfileView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: SvgPicture.asset(
-                            "assets/icons/profile/confirm.svg")),
-                    Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const Text(
-                          "Chờ xác nhận",
-                          style: TextStyle(fontSize: 11),
-                        )),
-                  ],
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const OrderSuccessView(0)));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      badges.Badge(
+                        position:
+                            badges.BadgePosition.topEnd(top: -12, end: -12),
+                        showBadge:
+                            orderProvider.confirmCount == 0 ? false : true,
+                        ignorePointer: false,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderSuccessView(0)));
+                        },
+                        badgeContent: Text(
+                          '${orderProvider.confirmCount}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        badgeAnimation: const BadgeAnimation.scale(
+                          animationDuration: Duration(seconds: 1),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.fastOutSlowIn,
+                          colorChangeAnimationCurve: Curves.easeInCubic,
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                          elevation: 0,
+                        ),
+                        child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            height: 30,
+                            width: 30,
+                            child: SvgPicture.asset(
+                                "assets/icons/profile/confirm.svg")),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Text(
+                            "Chờ xác nhận",
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                          )),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: SvgPicture.asset(
-                            "assets/icons/profile/package.svg")),
-                    Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const Text(
-                          "Chờ lấy hàng",
-                          style: TextStyle(fontSize: 11),
-                        )),
-                  ],
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const OrderSuccessView(1)));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      badges.Badge(
+                        position:
+                            badges.BadgePosition.topEnd(top: -12, end: -12),
+                        showBadge: orderProvider.waitCount == 0 ? false : true,
+                        ignorePointer: false,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderSuccessView(1)));
+                        },
+                        badgeContent: Text(
+                          '${orderProvider.waitCount}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        badgeAnimation: const BadgeAnimation.scale(
+                          animationDuration: Duration(seconds: 1),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.fastOutSlowIn,
+                          colorChangeAnimationCurve: Curves.easeInCubic,
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                          elevation: 0,
+                        ),
+                        child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            height: 30,
+                            width: 30,
+                            child: SvgPicture.asset(
+                                "assets/icons/profile/package.svg")),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Text(
+                            "Chờ lấy hàng",
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                          )),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: SvgPicture.asset("assets/icons/profile/go.svg")),
-                    Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const Text(
-                          "Đang giao",
-                          style: TextStyle(fontSize: 11),
-                        )),
-                  ],
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const OrderSuccessView(2)));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      badges.Badge(
+                        position:
+                            badges.BadgePosition.topEnd(top: -12, end: -12),
+                        showBadge:
+                            orderProvider.transportCount == 0 ? false : true,
+                        ignorePointer: false,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderSuccessView(2)));
+                        },
+                        badgeContent: Text(
+                          '${orderProvider.transportCount}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        badgeAnimation: const BadgeAnimation.scale(
+                          animationDuration: Duration(seconds: 1),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.fastOutSlowIn,
+                          colorChangeAnimationCurve: Curves.easeInCubic,
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                          elevation: 0,
+                        ),
+                        child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            height: 30,
+                            width: 30,
+                            child: SvgPicture.asset(
+                                "assets/icons/profile/go.svg")),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Text(
+                            "Đang giao",
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                          )),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child:
-                            SvgPicture.asset("assets/icons/profile/star.svg")),
-                    Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const Text(
-                          "Đánh giá",
-                          style: TextStyle(fontSize: 11),
-                        )),
-                  ],
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const OrderSuccessView(3)));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      badges.Badge(
+                        position:
+                            badges.BadgePosition.topEnd(top: -12, end: -12),
+                        showBadge:
+                            orderProvider.evaluateCount == 0 ? false : true,
+                        ignorePointer: false,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const OrderSuccessView(3)));
+                        },
+                        badgeContent: Text(
+                          '${orderProvider.evaluateCount}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        badgeAnimation: const BadgeAnimation.scale(
+                          animationDuration: Duration(seconds: 1),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.fastOutSlowIn,
+                          colorChangeAnimationCurve: Curves.easeInCubic,
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                          elevation: 0,
+                        ),
+                        child: Container(
+                            margin: const EdgeInsets.only(left: 12),
+                            height: 30,
+                            width: 30,
+                            child: SvgPicture.asset(
+                                "assets/icons/profile/star.svg")),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Text(
+                            "Đánh giá",
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w500),
+                          )),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -315,8 +501,9 @@ class _ProfileViewState extends State<ProfileView> {
         Container(
           padding: const EdgeInsets.all(5),
           decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
+              color: Colors.white,
+              border: Border.symmetric(
+                  horizontal: BorderSide(color: Colors.black12))),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -337,37 +524,46 @@ class _ProfileViewState extends State<ProfileView> {
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(5),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.pink,
-                          size: 30,
-                        )),
-                  ),
-                  Text("Yêu thích"),
-                ],
-              ),
-              const Text("0"),
-            ],
+        InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const FavoriteListView()));
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.pink,
+                            size: 30,
+                          )),
+                    ),
+                    Text("Yêu thích"),
+                  ],
+                ),
+                Text('${favoriteCount.favoriteCount}'),
+              ],
+            ),
           ),
         ),
         InkWell(
           onTap: () {
             FirebaseAuth.instance.signOut().then((value) {
+              favoriteCount.clearFavorite();
+              cartProvider.clearCart();
+              orderProvider.clearOrder();
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const LoginView()),
                   (route) => false);
