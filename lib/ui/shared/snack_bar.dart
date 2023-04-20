@@ -11,27 +11,29 @@ class CustomSnackBar extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       height: 60,
       decoration: BoxDecoration(
-          color: color == 'green' ? Colors.green : Colors.yellow,
+          color: color == 'green' ? Colors.green : Colors.red,
           borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                ),
-                Text(
-                  content,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                ),
-              ],
+      child: Center(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  Text(
+                    content,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

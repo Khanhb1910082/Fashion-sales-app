@@ -34,7 +34,7 @@ class _FlashSaleWidgetState extends State<FlashSaleWidget> {
           );
         } else {
           return const Center(
-            child: Text("Sản phẩm hiện chưa trưng bày"),
+            child: CircularProgressIndicator(),
           );
         }
       },
@@ -85,7 +85,7 @@ class _FlashSaleWidgetState extends State<FlashSaleWidget> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
-                          "- 10%",
+                          "Sale",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

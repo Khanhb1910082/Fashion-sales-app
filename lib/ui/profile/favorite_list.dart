@@ -95,6 +95,7 @@ class _FavoriteListViewState extends State<FavoriteListView> {
     return Column(
       children: [
         Container(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           margin: const EdgeInsets.only(bottom: 10),
           decoration: const BoxDecoration(color: Colors.white),
           child: Row(

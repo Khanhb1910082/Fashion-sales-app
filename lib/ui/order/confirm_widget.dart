@@ -1,8 +1,13 @@
 import 'package:blackrose/models/order.dart';
 import 'package:blackrose/service/order_service.dart';
+import 'package:blackrose/ui/notify/notify_manager.dart';
 import 'package:blackrose/ui/order/order_detail.dart';
+import 'package:blackrose/ui/order/order_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:provider/provider.dart';
+
+import '../shared/snack_bar.dart';
 
 class ConfirmWidget extends StatefulWidget {
   const ConfirmWidget(this.status, {super.key});
@@ -49,6 +54,7 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
   }
 
   Widget _buildOrders(Orders order) {
+    final item = Provider.of<OrderManager>(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: const BoxDecoration(
@@ -112,7 +118,7 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
                   MaterialPageRoute(builder: (_) => OrderDetailView(order)));
             },
             child: Container(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               decoration: const BoxDecoration(
                   border: Border.symmetric(
                       horizontal: BorderSide(
@@ -120,12 +126,12 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
               ))),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text(
-                    "Chờ xác nhận",
-                    style: TextStyle(color: Colors.blueAccent),
+                    NotiManager.notiList[widget.status],
+                    style: const TextStyle(color: Colors.blueAccent),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios_rounded,
                     color: Colors.black26,
                   ),
@@ -134,9 +140,9 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.5,
@@ -147,10 +153,70 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        //status = "Đã hủy đơn";
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              shadowColor: Colors.white70,
+                              content: Stack(
+                                children: const [
+                                  Text(
+                                    "Bạn có chắc muốn hủy đơn hàng này!",
+                                    textAlign: TextAlign.justify,
+                                  )
+                                ],
+                              ),
+                              actionsAlignment: MainAxisAlignment.spaceBetween,
+                              actions: [
+                                TextButton(
+                                    style: const ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll(
+                                                Colors.red)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      "Quay lại",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    )),
+                                TextButton(
+                                    style: const ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll(
+                                                Colors.red)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: CustomSnackBar(
+                                            "!! Đã hủy đơn hàng !!",
+                                            "Sản phẩm đã được chuyển vào mục hủy hàng!",
+                                            "red"),
+                                        behavior: SnackBarBehavior.floating,
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                      ));
+                                      item.updateOrder(widget.status);
+                                      OrderService.cancelOrders(order);
+                                    },
+                                    child: const Text(
+                                      "OK",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ))
+                              ],
+                            );
+                          },
+                        );
                       });
                     },
-                    child: const Text("Hủy đơn hàng"))
+                    child: Text(NotiManager.statusList[widget.status]))
               ],
             ),
           )

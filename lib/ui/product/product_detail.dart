@@ -252,6 +252,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
                 //FlashSaleWidget(),
                 ProductFilterView(widget.product),
+                const SizedBox(height: 20),
               ],
             ),
           ),

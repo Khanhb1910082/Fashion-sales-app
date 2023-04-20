@@ -1,5 +1,9 @@
+import 'package:blackrose/ui/product/product_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../../service/product_service.dart';
@@ -47,6 +51,7 @@ class _ProductFilterViewState extends State<ProductFilterView> {
   }
 
   Widget buidProduct(Product product) {
+    final isfavorite = Provider.of<ProductManager>(context);
     return SizedBox(
       height: 370,
       child: Container(
@@ -57,27 +62,19 @@ class _ProductFilterViewState extends State<ProductFilterView> {
         ),
         child: Column(
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProductDetail(product)));
-              },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 5),
-                constraints: const BoxConstraints.expand(
-                  width: 250,
-                  height: 290,
+            Stack(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProductDetail(product)));
+                  },
+                  child: Image.network(product.productUrl[0],
+                      height: 285, fit: BoxFit.cover),
                 ),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(product.productUrl[0]),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.all(5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,27 +87,70 @@ class _ProductFilterViewState extends State<ProductFilterView> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
-                          "- 10%",
+                          // isFavorite ? "Yêu thích" :
+                          'Hot',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Colors.red),
+                      StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection('favoritelist')
+                              .doc(FirebaseAuth.instance.currentUser!.email)
+                              .collection(FirebaseAuth
+                                  .instance.currentUser!.email
+                                  .toString())
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
+                            } else if (snapshot.hasData) {
+                              bool isFavorite = false;
+                              for (int index = 0;
+                                  index < snapshot.data!.docs.length;
+                                  index++) {
+                                if (product.id ==
+                                    snapshot.data!.docs[index].get("id")) {
+                                  isFavorite = true;
+                                  break;
+                                }
+                              }
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isfavorite.setFavorite(product);
+                                  });
+                                },
+                                child: Icon(
+                                  isFavorite
+                                      ? Icons.favorite_sharp
+                                      : Icons.favorite_border_outlined,
+                                  color: Colors.deepOrange,
+                                  size: 28,
+                                ),
+                              );
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
             Container(
+              margin: const EdgeInsets.only(top: 10),
               padding: const EdgeInsets.symmetric(horizontal: 6),
               alignment: Alignment.centerLeft,
               child: Text(
                 product.productName.toString(),
                 textAlign: TextAlign.justify,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+                maxLines: 1,
                 style: const TextStyle(
                   fontSize: 14,
                 ),

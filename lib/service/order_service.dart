@@ -24,4 +24,18 @@ class OrderService {
 
     await addOrder.doc(DateTime.now().toIso8601String()).set(order.toMap());
   }
+
+  static void cancelOrders(Orders item) async {
+    CollectionReference order = FirebaseFirestore.instance
+        .collection('orders')
+        .doc(FirebaseAuth.instance.currentUser!.email)
+        .collection(FirebaseAuth.instance.currentUser!.email.toString());
+    var snapshot = await order.get();
+    for (final doc in snapshot.docs) {
+      if (doc.get('time') == item.time && doc.get('id') == item.id) {
+        doc.reference.update({"status": 4});
+        break;
+      }
+    }
+  }
 }

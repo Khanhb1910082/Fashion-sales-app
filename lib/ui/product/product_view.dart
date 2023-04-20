@@ -28,22 +28,22 @@ class _ProductViewState extends State<ProductView> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.pink,
-          title: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            height: 35,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const TextField(
-              decoration: InputDecoration(
-                icon: Icon(
-                  Icons.search_outlined,
-                  size: 25,
-                ),
-                hintText: 'Thời trang công sở',
-                border: InputBorder.none,
+          title: TextField(
+            decoration: InputDecoration(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              fillColor: Colors.white,
+              filled: true,
+              prefixIcon: const Icon(
+                Icons.search_outlined,
+                size: 25,
+                color: Colors.black54,
               ),
+              hintMaxLines: 1,
+              hintText: 'Thời trang công sở',
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(35),
+                  borderSide: BorderSide.none),
             ),
           ),
           actions: [
@@ -118,7 +118,9 @@ class _ProductViewState extends State<ProductView> {
                   GridView(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, childAspectRatio: 2 / 3.6),
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 5,
+                              childAspectRatio: 2 / 3.6),
                       children: product
                           .where((item) => item.sex == 'men')
                           .map(buildProduct)
@@ -248,7 +250,7 @@ class _ProductViewState extends State<ProductView> {
                 product.productName.toString(),
                 textAlign: TextAlign.justify,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+                maxLines: 1,
                 style: const TextStyle(
                   fontSize: 14,
                 ),

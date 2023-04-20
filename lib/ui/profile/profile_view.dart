@@ -453,7 +453,7 @@ class _ProfileViewState extends State<ProfileView> {
         ),
         const SizedBox(height: 10),
         Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             decoration: const BoxDecoration(
               color: Colors.white,
             ),
@@ -465,13 +465,15 @@ class _ProfileViewState extends State<ProfileView> {
               ],
             )),
         const SizedBox(height: 10),
+        Center(child: Text("Bạn chưa mua sản phẩm nào!")),
+        const SizedBox(height: 10),
         InkWell(
           onTap: () {
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => ProfileDetail(user)));
           },
           child: Container(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: const BoxDecoration(
               color: Colors.white,
             ),
@@ -499,7 +501,7 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           decoration: const BoxDecoration(
               color: Colors.white,
               border: Border.symmetric(
@@ -530,7 +532,7 @@ class _ProfileViewState extends State<ProfileView> {
                 MaterialPageRoute(builder: (_) => const FavoriteListView()));
           },
           child: Container(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: const BoxDecoration(
               color: Colors.white,
             ),

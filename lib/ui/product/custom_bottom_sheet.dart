@@ -131,8 +131,6 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                     });
                   },
                   child: Container(
-                    height: 35,
-                    width: 60,
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -177,7 +175,6 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   },
                   child: Center(
                     child: Container(
-                      height: 33,
                       margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -236,7 +233,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
               ),
               const SizedBox(width: 8),
               SizedBox(
-                width: 20,
+                // width: ,
                 child: Text(
                   '$_count',
                   textAlign: TextAlign.end,
@@ -313,8 +310,55 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   ));
                 } else {
                   UserService.checkUser().then((value) {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => OrderNow(cart)));
+                    if (value) {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => OrderNow(cart)));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Thông tin chưa chính xác"),
+                              content: const Text(
+                                "Cần cập nhật thông tin trước khi đặt hàng",
+                                style: TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w400),
+                              ),
+                              actions: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    textStyle:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  child: const Text(
+                                    'Ok',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                          builder: (_) => const BottomBar(3)),
+                                      (route) => false,
+                                    );
+                                  },
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    textStyle:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                    }
                   }).onError((error, stackTrace) {
                     showDialog(
                         context: context,

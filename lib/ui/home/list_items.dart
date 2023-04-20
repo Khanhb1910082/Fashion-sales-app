@@ -19,34 +19,38 @@ class ListItemsWidget extends StatefulWidget {
 class _ListItemsWidgetState extends State<ListItemsWidget> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Product>>(
-        stream: ProductService.readProduct(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Có lỗi xảy ra!");
-          } else if (snapshot.hasData) {
-            final product = snapshot.data!;
-            return GridView(
-              padding: const EdgeInsets.only(top: 3),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                // crossAxisSpacing: 0,
-                // mainAxisSpacing: 0,
-                childAspectRatio: 2 / 3.6,
-              ),
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              children: product
-                  .where((item) => item.type != 'accessory')
-                  .map(buidProduct)
-                  .toList(),
-            );
-          } else {
-            return const Center(
-              child: Text("Sản phẩm hiện chưa được trưng bày"),
-            );
-          }
-        });
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: StreamBuilder<List<Product>>(
+          stream: ProductService.readProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text("Có lỗi xảy ra!");
+            } else if (snapshot.hasData) {
+              final product = snapshot.data!;
+              return GridView(
+                primary: false,
+                padding: const EdgeInsets.only(top: 3),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 0,
+                  mainAxisSpacing: 2,
+                  childAspectRatio: 2 / 3.6,
+                ),
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                children: product
+                    .where((item) => item.type != 'accessory')
+                    .map(buidProduct)
+                    .toList(),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+    );
   }
 
   Widget buidProduct(Product product) {
@@ -70,8 +74,11 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                         MaterialPageRoute(
                             builder: (context) => ProductDetail(product)));
                   },
-                  child: Image.network(product.productUrl[0],
-                      height: 285, fit: BoxFit.cover),
+                  child: Image.network(
+                    product.productUrl[0],
+                    height: 285,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
@@ -148,7 +155,7 @@ class _ListItemsWidgetState extends State<ListItemsWidget> {
                 product.productName.toString(),
                 textAlign: TextAlign.justify,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+                maxLines: 1,
                 style: const TextStyle(
                   fontSize: 14,
                 ),

@@ -18,12 +18,6 @@ class SplashView extends StatelessWidget {
       } else {
         Get.offAll(const LoginView());
       }
-
-      // if () {
-      //   Get.offAll(const LoginView());
-      // } else {
-      //   Get.offAll(const BottomBar());
-      // }
     });
     return Scaffold(
       body: Container(

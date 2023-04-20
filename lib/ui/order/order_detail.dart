@@ -365,7 +365,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             color: Colors.white,
           ),
           child: const Text(
-            "Nhấn \"Đặt hàng\" đồng nghĩa với việc bạn đồng ý tuân theo Điều khoản Turtle-K",
+            "Chúng tôi sẽ cập nhật tình trạng đơn hàng thường xuyên để bạn có thể theo dõi.",
             style: TextStyle(
               fontSize: 15,
             ),
@@ -387,7 +387,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: Row(
             children: [
-              Text(user.email,
+              Text(user.name,
                   style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.w500)),
               const SizedBox(width: 10),

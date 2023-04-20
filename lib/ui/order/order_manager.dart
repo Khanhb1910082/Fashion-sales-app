@@ -37,6 +37,7 @@ class OrderManager extends ChangeNotifier {
       }
     }
     setOrderCount(confirm, wait, transport, evaluate);
+    notifyListeners();
   }
 
   void addToConfirm() {
@@ -85,5 +86,17 @@ class OrderManager extends ChangeNotifier {
     transportCount = 0;
     evaluateCount = 0;
     notifyListeners();
+  }
+
+  void updateOrder(int status) {
+    if (status == 0) {
+      deleteToConfirm();
+    } else if (status == 1) {
+      deleteToWait();
+    } else if (status == 2) {
+      deleteToTransport();
+    } else if (status == 3) {
+      deleteToEvaluate();
+    }
   }
 }

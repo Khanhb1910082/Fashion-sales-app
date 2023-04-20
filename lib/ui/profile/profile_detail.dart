@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/user.dart';
 import '../../service/user_service.dart';
+import '../shared/snack_bar.dart';
 
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail(this.user, {super.key});
@@ -168,8 +169,11 @@ class _ProfileDetailState extends State<ProfileDetail> {
         if (value!.isEmpty) {
           return "Vui lòng nhập số điện thoại.";
         }
-        if (value.length < 9 || value.length > 14) {
-          return 'Số điện thoại không hợp lệ.';
+        if (value.length != 10) {
+          return 'Số điện thoại gồm 10 số.';
+        }
+        if (!value.startsWith('0')) {
+          return 'SDT phải bắt đầu bằng 0';
         }
         return null;
       },
@@ -189,6 +193,13 @@ class _ProfileDetailState extends State<ProfileDetail> {
         await UserService.updateUser(updateUser);
         if (mounted) {
           Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: CustomSnackBar(
+                "!! Chúc mừng !!", "Thông tin đã được cập nhật!!!", "green"),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ));
         }
       },
       style: ElevatedButton.styleFrom(

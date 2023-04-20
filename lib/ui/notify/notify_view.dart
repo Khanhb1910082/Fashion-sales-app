@@ -75,6 +75,7 @@ class _NotifitionViewState extends State<NotifitionView> {
       body: ListView(
         children: [
           Container(
+            width: width,
             padding: const EdgeInsets.all(5),
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -88,8 +89,8 @@ class _NotifitionViewState extends State<NotifitionView> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
-                          width: 30,
-                          height: 30,
+                          width: 33,
+                          height: 33,
                           child:
                               SvgPicture.asset("assets/icons/notify/sale.svg")),
                     ),
@@ -105,6 +106,7 @@ class _NotifitionViewState extends State<NotifitionView> {
                           ),
                         ),
                         Container(
+                          width: width * 2 / 3,
                           margin: const EdgeInsets.only(top: 5),
                           child: const Text(
                             "Rất nhiều Voucher miễn phí đang chờ bạn.",
@@ -141,8 +143,8 @@ class _NotifitionViewState extends State<NotifitionView> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
-                          width: 30,
-                          height: 30,
+                          width: 33,
+                          height: 33,
                           child: SvgPicture.asset(
                               "assets/icons/notify/update.svg")),
                     ),
@@ -158,6 +160,7 @@ class _NotifitionViewState extends State<NotifitionView> {
                           ),
                         ),
                         Container(
+                          width: width * 2 / 3,
                           margin: const EdgeInsets.only(top: 5),
                           child: const Text(
                             "Bạn đang sử dụng phiên bản mới nhất!",
@@ -194,8 +197,8 @@ class _NotifitionViewState extends State<NotifitionView> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
-                          width: 30,
-                          height: 30,
+                          width: 33,
+                          height: 33,
                           child:
                               SvgPicture.asset("assets/icons/notify/news.svg")),
                     ),
@@ -211,9 +214,10 @@ class _NotifitionViewState extends State<NotifitionView> {
                           ),
                         ),
                         Container(
+                          width: width * 2 / 3,
                           margin: const EdgeInsets.only(top: 5),
                           child: const Text(
-                            "Các sản phẩm đang đồng loạt giảm giá mạnh ...",
+                            "Các sản phẩm đang đồng loạt giảm giá mạnh!!",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

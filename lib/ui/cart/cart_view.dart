@@ -129,10 +129,6 @@ class _CartViewState extends State<CartView> {
                           ),
                         ),
                         InkWell(
-                          // onTap: () {
-                          //   Navigator.of(context).push(
-                          //       MaterialPageRoute(builder: (_) => OrderView()));
-                          // },
                           onTap: () {
                             UserService.checkUser().then((value) {
                               if (sum == 0) {
@@ -200,20 +196,6 @@ class _CartViewState extends State<CartView> {
                                               );
                                             },
                                           ),
-                                          TextButton(
-                                            style: TextButton.styleFrom(
-                                              textStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelLarge,
-                                            ),
-                                            child: const Text(
-                                              'Cancel',
-                                              style: TextStyle(fontSize: 17),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ),
                                         ],
                                       );
                                     });
@@ -267,6 +249,7 @@ class _CartViewState extends State<CartView> {
 
   Widget _buildCartItem(Cart cart) {
     final cartProvider = Provider.of<CartManager>(context);
+    double width = MediaQuery.of(context).size.width;
     return Container(
       height: 120,
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -314,7 +297,7 @@ class _CartViewState extends State<CartView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 150,
+                  width: width / 2.8,
                   child: Text(
                     cart.productName,
                     maxLines: 2,
@@ -356,7 +339,7 @@ class _CartViewState extends State<CartView> {
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.only(top: 5, bottom: 5, right: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -385,7 +368,6 @@ class _CartViewState extends State<CartView> {
                 ),
                 Row(
                   children: [
-                    const SizedBox(width: 10),
                     InkWell(
                       onTap: () {
                         setState(() {

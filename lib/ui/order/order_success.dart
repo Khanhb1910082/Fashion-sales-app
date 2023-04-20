@@ -97,7 +97,7 @@ class OrderSuccessView extends StatelessWidget {
                 ),
               ]),
         ),
-        body: TabBarView(children: [
+        body: const TabBarView(children: [
           ConfirmWidget(0),
           ConfirmWidget(1),
           ConfirmWidget(2),

@@ -85,7 +85,7 @@ class _RegisterViewState extends State<RegisterView> {
                               const SizedBox(height: 10),
                               _buildSubmitField(),
                               const SizedBox(height: 15),
-                              Row(
+                              Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Text(
@@ -103,6 +103,7 @@ class _RegisterViewState extends State<RegisterView> {
                                     child: const Text(
                                       "Đăng nhập.",
                                       style: TextStyle(
+                                        fontSize: 16,
                                         color: Color.fromARGB(255, 3, 15, 244),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -189,7 +190,7 @@ class _RegisterViewState extends State<RegisterView> {
         return null;
       },
       onSaved: (newValue) {
-        user = user.copyWith(email: newValue);
+        user = user.copyWith(email: newValue!.toLowerCase());
       },
     );
   }

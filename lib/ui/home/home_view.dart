@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:blackrose/ui/cart/cart_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,10 +18,15 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView>
+    with AutomaticKeepAliveClientMixin<HomeView> {
+  @override
+  bool get wantKeepAlive => true;
+  final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartManager>(context);
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.black12,
       extendBodyBehindAppBar: true,
@@ -28,23 +34,22 @@ class _HomeViewState extends State<HomeView> {
         systemOverlayStyle:
             const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
         backgroundColor: const Color.fromARGB(1, 0, 0, 0),
-        title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          height: 35,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const TextField(
-            decoration: InputDecoration(
-              icon: Icon(
-                Icons.search_outlined,
-                size: 25,
-                color: Colors.black54,
-              ),
-              hintText: 'Nước hoa nữ',
-              border: InputBorder.none,
+        title: TextField(
+          decoration: InputDecoration(
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            fillColor: Colors.white,
+            filled: true,
+            prefixIcon: const Icon(
+              Icons.search_outlined,
+              size: 25,
+              color: Colors.black54,
             ),
+            hintMaxLines: 1,
+            hintText: 'Nước hoa nữ',
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(35),
+                borderSide: BorderSide.none),
           ),
         ),
         actions: [
@@ -86,158 +91,178 @@ class _HomeViewState extends State<HomeView> {
         ],
         elevation: 0,
       ),
-      body: ListView(padding: const EdgeInsets.all(0), children: [
-        Column(
+      body: ListView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(0),
           children: [
-            const Image(
-              image: AssetImage(
-                'assets/images/banner/banner2.png',
-              ),
-              fit: BoxFit.cover,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Danh mục sản phẩm',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+            Column(
+              children: [
+                const Image(
+                  image: AssetImage(
+                    'assets/images/banner/banner2.png',
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
-                            ImageIconWidget('assets/icons/category/t-shirt.png',
-                                'Polo', 't-shirt', 'men'),
-                            ImageIconWidget("assets/icons/category/shirt.png",
-                                'Shirt', 'shirt', 'men'),
-                            ImageIconWidget(
-                                "assets/icons/category/trousers.png",
-                                'Quần tây',
-                                'trousers',
-                                'men'),
-                            ImageIconWidget("assets/icons/category/jean.png",
-                                'Jean', 'jean', 'men'),
-                            ImageIconWidget("assets/icons/category/shorts.png",
-                                'Shorts', 'shorts', 'men'),
+                  fit: BoxFit.cover,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Danh mục sản phẩm',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: const [
+                                ImageIconWidget(
+                                    'assets/icons/category/t-shirt.png',
+                                    'Polo',
+                                    't-shirt',
+                                    'men'),
+                                ImageIconWidget(
+                                    "assets/icons/category/shirt.png",
+                                    'Shirt',
+                                    'shirt',
+                                    'men'),
+                                ImageIconWidget(
+                                    "assets/icons/category/trousers.png",
+                                    'Quần tây',
+                                    'trousers',
+                                    'men'),
+                                ImageIconWidget(
+                                    "assets/icons/category/jean.png",
+                                    'Jean',
+                                    'jean',
+                                    'men'),
+                                ImageIconWidget(
+                                    "assets/icons/category/shorts.png",
+                                    'Shorts',
+                                    'shorts',
+                                    'men'),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  ImageIconWidget(
+                                      "assets/icons/category/t-shirt_women.png",
+                                      'Thun',
+                                      't-shirt',
+                                      'women'),
+                                  ImageIconWidget(
+                                      "assets/icons/category/shirt_women.png",
+                                      'shirt',
+                                      'shirt',
+                                      'women'),
+                                  ImageIconWidget(
+                                      "assets/icons/category/trousers_women.png",
+                                      'Quần dài',
+                                      'trousers',
+                                      'women'),
+                                  ImageIconWidget(
+                                      "assets/icons/category/dress.png",
+                                      'Đầm',
+                                      'dress',
+                                      'women'),
+                                  ImageIconWidget(
+                                      "assets/icons/category/skirts.png",
+                                      'váy',
+                                      'skirts',
+                                      'women'),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              ImageIconWidget(
-                                  "assets/icons/category/t-shirt_women.png",
-                                  'Thun',
-                                  't-shirt',
-                                  'women'),
-                              ImageIconWidget(
-                                  "assets/icons/category/shirt_women.png",
-                                  'shirt',
-                                  'shirt',
-                                  'women'),
-                              ImageIconWidget(
-                                  "assets/icons/category/trousers_women.png",
-                                  'Quần dài',
-                                  'trousers',
-                                  'women'),
-                              ImageIconWidget("assets/icons/category/dress.png",
-                                  'Đầm', 'dress', 'women'),
-                              ImageIconWidget(
-                                  "assets/icons/category/skirts.png",
-                                  'váy',
-                                  'skirts',
-                                  'women'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                      bottom: BorderSide(
-                    color: Colors.pinkAccent,
-                    width: 5,
-                  ))),
-              child: Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'FLASH SALE',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Row(
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                          bottom: BorderSide(
+                        color: Colors.pinkAccent,
+                        width: 5,
+                      ))),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Xem tất cả',
-                              style: TextStyle(fontSize: 15),
+                              'FLASH SALE',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
-                            SvgPicture.asset(
-                              "assets/icons/angle-right.svg",
+                            Row(
+                              children: [
+                                const Text(
+                                  'Xem tất cả',
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                                SvgPicture.asset(
+                                  "assets/icons/angle-right.svg",
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const FlashSaleWidget(),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                      bottom: BorderSide(color: Colors.pinkAccent, width: 5))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      "Gợi ý hôm nay",
-                      style: TextStyle(
-                          color: Colors.deepOrange,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
+                ),
+                const FlashSaleWidget(),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                          bottom:
+                              BorderSide(color: Colors.pinkAccent, width: 5))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Gợi ý hôm nay",
+                          style: TextStyle(
+                              color: Colors.deepOrange,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const ListItemsWidget(),
+              ],
             ),
-            const ListItemsWidget(),
-          ],
-        ),
-      ]),
+          ]),
     );
   }
 }

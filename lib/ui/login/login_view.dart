@@ -219,11 +219,36 @@ class _LoginViewState extends State<LoginView> {
         password: _passwordController.text.trim(),
       )
           .then((value) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const BottomBar(0)));
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const BottomBar(0)),
+          (route) => false,
+        );
       }).onError((error, stackTrace) {
-        // ignore: avoid_print
-        print(error.toString());
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Row(
+                children: const [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.amber,
+                  ),
+                  SizedBox(width: 5),
+                  Text("Tài khoản không hợp lệ"),
+                ],
+              ),
+              content: const Text("Nhập sai Email hoặc mật khẩu."),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("OK"))
+              ],
+            );
+          },
+        );
       });
       _formKey.currentState!.save();
     }
@@ -300,8 +325,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   _buildRegister() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
           "Nếu bạn chưa có tài khoản? ",
@@ -319,6 +344,7 @@ class _LoginViewState extends State<LoginView> {
           child: const Text(
             "Đăng ký ngay.",
             style: TextStyle(
+              fontSize: 16,
               color: Color.fromARGB(255, 3, 15, 244),
               fontWeight: FontWeight.bold,
             ),
