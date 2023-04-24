@@ -1,10 +1,12 @@
 import 'dart:async';
 
-import 'package:blackrose/ui/login/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:blackrose/ui/login/login_view.dart';
+
+import '../../admin/statistical.dart';
 import '../home/bottom_bar.dart';
 
 class SplashView extends StatelessWidget {
@@ -14,7 +16,11 @@ class SplashView extends StatelessWidget {
   Widget build(BuildContext context) {
     Timer(const Duration(seconds: 1, milliseconds: 500), () {
       if (FirebaseAuth.instance.currentUser != null) {
-        Get.offAll(const BottomBar(0));
+        if (FirebaseAuth.instance.currentUser!.email != 'admin@gmail.com') {
+          Get.offAll(const BottomBar(0));
+        } else {
+          Get.offAll(const StatisticalView());
+        }
       } else {
         Get.offAll(const LoginView());
       }

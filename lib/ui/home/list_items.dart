@@ -17,12 +17,19 @@ class ListItemsWidget extends StatefulWidget {
 }
 
 class _ListItemsWidgetState extends State<ListItemsWidget> {
+  late Stream<List<Product>> _product;
+  @override
+  void initState() {
+    super.initState();
+    _product = ProductService.readProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2),
       child: StreamBuilder<List<Product>>(
-          stream: ProductService.readProduct(),
+          stream: _product,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Text("Có lỗi xảy ra!");

@@ -16,10 +16,17 @@ class FlashSaleWidget extends StatefulWidget {
 }
 
 class _FlashSaleWidgetState extends State<FlashSaleWidget> {
+  late Stream<List<Product>> _product;
+  @override
+  void initState() {
+    super.initState();
+    _product = ProductService.readProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Product>>(
-      stream: ProductService.readProduct(),
+      stream: _product,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final product = snapshot.data!;

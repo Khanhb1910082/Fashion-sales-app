@@ -465,7 +465,7 @@ class _ProfileViewState extends State<ProfileView> {
               ],
             )),
         const SizedBox(height: 10),
-        Center(child: Text("Bạn chưa mua sản phẩm nào!")),
+        const Center(child: Text("Bạn chưa mua sản phẩm nào!")),
         const SizedBox(height: 10),
         InkWell(
           onTap: () {

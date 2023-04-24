@@ -29,4 +29,11 @@ class UserService {
     }
     return true;
   }
+
+  static int totalUser = 0;
+  static countUser() async {
+    final user = FirebaseFirestore.instance.collection('users');
+    final count = await user.get();
+    totalUser = count.docs.length;
+  }
 }

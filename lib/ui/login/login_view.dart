@@ -1,3 +1,4 @@
+import 'package:blackrose/admin/statistical.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,7 +19,7 @@ class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey();
-  bool showpass = false;
+  bool showpass = true;
   @override
   void dispose() {
     _emailController.dispose();
@@ -219,10 +220,17 @@ class _LoginViewState extends State<LoginView> {
         password: _passwordController.text.trim(),
       )
           .then((value) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const BottomBar(0)),
-          (route) => false,
-        );
+        if (FirebaseAuth.instance.currentUser!.email != 'admin@gmail.com') {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const BottomBar(0)),
+            (route) => false,
+          );
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const StatisticalView()),
+            (route) => false,
+          );
+        }
       }).onError((error, stackTrace) {
         showDialog(
           context: context,

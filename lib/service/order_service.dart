@@ -22,10 +22,10 @@ class OrderService {
         .doc(FirebaseAuth.instance.currentUser!.email)
         .collection(FirebaseAuth.instance.currentUser!.email.toString());
 
-    await addOrder.doc(DateTime.now().toIso8601String()).set(order.toMap());
+    await addOrder.doc(Timestamp.now().toDate().toString()).set(order.toMap());
   }
 
-  static void cancelOrders(Orders item) async {
+  static void cancelOrders(Orders item, int status) async {
     CollectionReference order = FirebaseFirestore.instance
         .collection('orders')
         .doc(FirebaseAuth.instance.currentUser!.email)
@@ -33,9 +33,17 @@ class OrderService {
     var snapshot = await order.get();
     for (final doc in snapshot.docs) {
       if (doc.get('time') == item.time && doc.get('id') == item.id) {
-        doc.reference.update({"status": 4});
+        doc.reference.update({"status": status});
         break;
       }
+    }
+  }
+
+  static totalOrder() async {
+    final order = FirebaseFirestore.instance.collection('order');
+    final total = await order.get();
+    for (var doc in total.docs) {
+      return doc.reference.id;
     }
   }
 }

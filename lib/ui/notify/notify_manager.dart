@@ -5,14 +5,14 @@ class NotiManager {
     "Đang vận chuyển",
     "Đã nhận",
     "Đã hủy",
-    "Đánh giá"
+    "Đơn hàng đã trả"
   ];
   static List statusList = [
     "Hủy đơn hàng",
     "Hủy đơn hàng",
-    "Hủy đơn hàng",
+    "Nhận hàng",
     "Đánh giá",
     "Mua lại",
-    "Đã trả"
+    "Hàng đã trả"
   ];
 }

@@ -153,67 +153,134 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              shadowColor: Colors.white70,
-                              content: Stack(
-                                children: const [
-                                  Text(
-                                    "Bạn có chắc muốn hủy đơn hàng này!",
-                                    textAlign: TextAlign.justify,
-                                  )
+                        if (widget.status == 0) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                shadowColor: Colors.white70,
+                                content: Stack(
+                                  children: const [
+                                    Text(
+                                      "Bạn có chắc muốn hủy đơn hàng này!",
+                                      textAlign: TextAlign.justify,
+                                    )
+                                  ],
+                                ),
+                                actionsAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                actions: [
+                                  TextButton(
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.red)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        "Quay lại",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      )),
+                                  TextButton(
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.red)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: CustomSnackBar(
+                                              "!! Đã hủy đơn hàng !!",
+                                              "Sản phẩm đã được chuyển vào mục hủy hàng!",
+                                              "red"),
+                                          behavior: SnackBarBehavior.floating,
+                                          backgroundColor: Colors.transparent,
+                                          elevation: 0,
+                                        ));
+                                        item.updateOrder(widget.status);
+                                        OrderService.cancelOrders(order, 4);
+                                      },
+                                      child: const Text(
+                                        "OK",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ))
                                 ],
-                              ),
-                              actionsAlignment: MainAxisAlignment.spaceBetween,
-                              actions: [
-                                TextButton(
-                                    style: const ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStatePropertyAll(
-                                                Colors.red)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text(
-                                      "Quay lại",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
-                                    )),
-                                TextButton(
-                                    style: const ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStatePropertyAll(
-                                                Colors.red)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: CustomSnackBar(
-                                            "!! Đã hủy đơn hàng !!",
-                                            "Sản phẩm đã được chuyển vào mục hủy hàng!",
-                                            "red"),
-                                        behavior: SnackBarBehavior.floating,
-                                        backgroundColor: Colors.transparent,
-                                        elevation: 0,
-                                      ));
-                                      item.updateOrder(widget.status);
-                                      OrderService.cancelOrders(order);
-                                    },
-                                    child: const Text(
-                                      "OK",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
-                                    ))
-                              ],
-                            );
-                          },
-                        );
+                              );
+                            },
+                          );
+                        } else if (widget.status == 2) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                shadowColor: Colors.white70,
+                                content: Stack(
+                                  children: const [
+                                    Text(
+                                      "Chỉ chọn nhận hàng khi sản phẩm đã đến tay của bạn!!!",
+                                      textAlign: TextAlign.justify,
+                                    )
+                                  ],
+                                ),
+                                actionsAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                actions: [
+                                  TextButton(
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.red)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        "Quay lại",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      )),
+                                  TextButton(
+                                      style: const ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStatePropertyAll(
+                                                  Colors.red)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: CustomSnackBar(
+                                              "!! Đã nhận đơn hàng !!",
+                                              "Sản phẩm đã được chuyển vào mục nhận hàng!",
+                                              "green"),
+                                          behavior: SnackBarBehavior.floating,
+                                          backgroundColor: Colors.transparent,
+                                          elevation: 0,
+                                        ));
+                                        item.updateOrder(widget.status);
+                                        item.addToTransport();
+                                        OrderService.cancelOrders(order, 3);
+                                      },
+                                      child: const Text(
+                                        "OK",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ))
+                                ],
+                              );
+                            },
+                          );
+                        }
                       });
                     },
                     child: Text(NotiManager.statusList[widget.status]))
