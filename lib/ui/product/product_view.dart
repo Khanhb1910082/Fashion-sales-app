@@ -151,6 +151,7 @@ class _ProductViewState extends State<ProductView> {
   }
 
   Widget buildProduct(Product product) {
+    double height = MediaQuery.of(context).size.height;
     final isfavorite = Provider.of<ProductManager>(context);
     return SizedBox(
       height: 370,
@@ -172,8 +173,11 @@ class _ProductViewState extends State<ProductView> {
                         MaterialPageRoute(
                             builder: (context) => ProductDetail(product)));
                   },
-                  child: Image.network(product.productUrl[0],
-                      height: 295, fit: BoxFit.cover),
+                  child: SizedBox(
+                    height: height / 2.9,
+                    child:
+                        Image.network(product.productUrl[0], fit: BoxFit.cover),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
@@ -244,7 +248,8 @@ class _ProductViewState extends State<ProductView> {
               ],
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              margin: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.centerLeft,
               child: Text(
                 product.productName.toString(),
@@ -262,7 +267,7 @@ class _ProductViewState extends State<ProductView> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,

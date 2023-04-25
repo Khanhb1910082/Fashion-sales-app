@@ -47,29 +47,32 @@ class _BottomBarState extends State<BottomBar> {
 
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderManager>(context);
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.pink,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Gợi ý hôm nay',
             activeIcon: Icon(Icons.spa),
             tooltip: "Home",
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.local_mall_outlined),
             label: 'Cửa hàng',
             activeIcon: Icon(Icons.local_mall),
           ),
           BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.bell),
+            icon: Badge(
+                isLabelVisible: orderProvider.badgeNoti(),
+                child: const FaIcon(FontAwesomeIcons.bell)),
             label: 'Thông báo',
-            activeIcon: FaIcon(FontAwesomeIcons.solidBell),
+            activeIcon: const FaIcon(FontAwesomeIcons.solidBell),
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined),
             label: 'Tài khoản',
             activeIcon: Icon(Icons.account_circle),

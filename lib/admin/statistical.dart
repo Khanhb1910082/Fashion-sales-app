@@ -2,6 +2,7 @@ import 'package:blackrose/admin/service/order_service.dart';
 import 'package:blackrose/service/user_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_drawer.dart';
 
@@ -24,6 +25,8 @@ class _StatisticalViewState extends State<StatisticalView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle:
+            const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
         title: const Text("Thống kê"),
       ),
       drawer: const AppDrawer(),

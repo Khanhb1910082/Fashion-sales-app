@@ -1,5 +1,9 @@
+import 'package:blackrose/ui/product/product_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../../service/product_service.dart';
@@ -52,104 +56,141 @@ class _ProductCategoryViewState extends State<ProductCategoryView> {
   }
 
   Widget buidProduct(Product product) {
-    return SizedBox(
-      height: 370,
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Column(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProductDetail(product)));
-              },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 5),
-                constraints: const BoxConstraints.expand(
-                  width: 250,
-                  height: 290,
+    final isfavorite = Provider.of<ProductManager>(context);
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return Container(
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProductDetail(product)));
+                },
+                child: SizedBox(
+                  height: height / 3,
+                  width: width,
+                  child:
+                      Image.network(product.productUrl[0], fit: BoxFit.cover),
                 ),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(product.productUrl[0]),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.deepOrange,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          "- 10%",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        // isFavorite ? "Yêu thích" :
+                        'Hot',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Colors.red),
-                    ],
-                  ),
+                    ),
+                    StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('favoritelist')
+                            .doc(FirebaseAuth.instance.currentUser!.email)
+                            .collection(FirebaseAuth.instance.currentUser!.email
+                                .toString())
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text("Error: ${snapshot.error}");
+                          } else if (snapshot.hasData) {
+                            bool isFavorite = false;
+                            for (int index = 0;
+                                index < snapshot.data!.docs.length;
+                                index++) {
+                              if (product.id ==
+                                  snapshot.data!.docs[index].get("id")) {
+                                isFavorite = true;
+                                break;
+                              }
+                            }
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isfavorite.setFavorite(product);
+                                });
+                              },
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite_sharp
+                                    : Icons.favorite_border_outlined,
+                                color: Colors.deepOrange,
+                                size: 28,
+                              ),
+                            );
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }),
+                  ],
                 ),
               ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              product.productName.toString(),
+              textAlign: TextAlign.justify,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: const TextStyle(
+                fontSize: 14,
+              ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                product.productName.toString(),
-                textAlign: TextAlign.justify,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                style: const TextStyle(
-                  fontSize: 14,
+          ),
+          const Expanded(
+            child: SizedBox(
+              height: 0,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${MoneyFormatter(amount: product.newPrice.toDouble()).output.withoutFractionDigits}đ',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
                 ),
-              ),
-            ),
-            const Expanded(
-              child: SizedBox(
-                height: 0,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${MoneyFormatter(amount: product.newPrice.toDouble()).output.withoutFractionDigits}đ',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
+                Text(
+                  'Đã bán ${product.view}',
+                  style: const TextStyle(
+                    fontSize: 12,
                   ),
-                  Text(
-                    'Đã bán ${product.view}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

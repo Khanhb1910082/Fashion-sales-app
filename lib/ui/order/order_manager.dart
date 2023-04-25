@@ -99,4 +99,10 @@ class OrderManager extends ChangeNotifier {
       deleteToEvaluate();
     }
   }
+
+  bool badgeNoti() {
+    return confirmCount == 0 && waitCount == 0 && transportCount == 0
+        ? false
+        : true;
+  }
 }

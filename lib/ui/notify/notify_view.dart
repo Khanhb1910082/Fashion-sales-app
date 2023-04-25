@@ -1,8 +1,9 @@
 import 'package:badges/badges.dart';
 import 'package:blackrose/models/order.dart';
 import 'package:blackrose/service/order_service.dart';
-import 'package:blackrose/ui/order/confirm_widget.dart';
+import 'package:blackrose/ui/notify/notify_manager.dart';
 import 'package:blackrose/ui/order/order_success.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:money_formatter/money_formatter.dart';
@@ -258,37 +259,40 @@ class _NotifitionViewState extends State<NotifitionView> {
             ),
           ),
           const SizedBox(height: 5),
-          StreamBuilder(
-            stream: OrderService.readOrders(0),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text("Error: ${snapshot.error}"),
-                );
-              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                final notify = snapshot.data!;
-                return Column(
-                  children: notify.map(_buildNotify).toList(),
-                );
-              } else {
-                return SizedBox(
-                  height: width / 1.5,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(
-                            image:
-                                const AssetImage("assets/images/no_item.png"),
-                            height: width / 3,
-                            width: width / 3),
-                        const Text("Chưa có đơn hàng")
-                      ],
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: StreamBuilder(
+              stream: OrderService.readOrders(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error: ${snapshot.error}"),
+                  );
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  final notify = snapshot.data!;
+                  return Column(
+                    children: notify.map(_buildNotify).toList(),
+                  );
+                } else {
+                  return SizedBox(
+                    height: width / 1.5,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                              image:
+                                  const AssetImage("assets/images/no_item.png"),
+                              height: width / 3,
+                              width: width / 3),
+                          const Text("Chưa có đơn hàng")
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
+                  );
+                }
+              },
+            ),
           )
         ],
       ),
@@ -336,11 +340,11 @@ class _NotifitionViewState extends State<NotifitionView> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.7,
                     child: Row(
-                      children: const [
+                      children: [
                         Text(
-                          "Đặt hàng thành công",
+                          NotiManager.notifierList[notify.status],
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,

@@ -21,7 +21,7 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return StreamBuilder(
-      stream: OrderService.readOrders(widget.status),
+      stream: OrderService.readOrdersStatus(widget.status),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

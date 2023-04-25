@@ -15,4 +15,9 @@ class NotiManager {
     "Mua lại",
     "Hàng đã trả"
   ];
+  static List notifierList = [
+    "Đặt hàng thành công",
+    "Đơn hàng đã được xác nhận",
+    "Đã giao cho đơn vị vận chuyển",
+  ];
 }

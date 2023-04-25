@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:badges/badges.dart';
+import 'package:blackrose/ui/product/product_detail.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:tiengviet/tiengviet.dart';
 
 import 'package:blackrose/ui/cart/cart_view.dart';
 
+import '../../models/product.dart';
 import '../cart/car_manager.dart';
 import '../shared/image_icon.dart';
 import 'flash_sale.dart';
@@ -22,6 +26,9 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final databaseReference = FirebaseFirestore.instance;
+  final TextEditingController searchController = TextEditingController();
+
   final PageController _pageController = PageController(initialPage: 0);
   final int _numPages = 5;
   int _currentPage = 0;
@@ -59,23 +66,32 @@ class _HomeViewState extends State<HomeView> {
         systemOverlayStyle:
             const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
         backgroundColor: const Color.fromARGB(1, 0, 0, 0),
-        title: TextField(
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            fillColor: Colors.white,
-            filled: true,
-            prefixIcon: const Icon(
-              Icons.search_outlined,
-              size: 25,
-              color: Colors.black54,
+        title: Column(
+          children: [
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: const Icon(
+                  Icons.search_outlined,
+                  size: 25,
+                  color: Colors.black54,
+                ),
+                hintMaxLines: 1,
+                hintText: 'Nước hoa nữ',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide.none),
+              ),
+              // onChanged: (text) => searchProducts(text),
+              onTap: () {
+                showSearch(context: context, delegate: CustomSearch());
+              },
             ),
-            hintMaxLines: 1,
-            hintText: 'Nước hoa nữ',
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(35),
-                borderSide: BorderSide.none),
-          ),
+          ],
         ),
         actions: [
           InkWell(
@@ -336,6 +352,144 @@ class _HomeViewState extends State<HomeView> {
           ],
         ),
       ]),
+    );
+  }
+}
+
+class CustomSearch extends SearchDelegate {
+  List<Product> product = [];
+  void fetch() async {
+    var record = await FirebaseFirestore.instance.collection('products').get();
+    mapRecord(record);
+  }
+
+  void mapRecord(QuerySnapshot<Map<String, dynamic>> record) {
+    var list = record.docs
+        .map((item) => Product(
+              id: item['id'],
+              productName: item['product_name'],
+              productUrl: List<String>.from((item['product_url'])),
+              size: List<String>.from((item['size'])),
+              color: List<String>.from((item['color'])),
+              describe: item['describe'],
+              newPrice: item['newprice'],
+              oldPrice: item['oldprice'],
+              quantity: item['quantity'],
+              type: item['type'],
+              sale: item['sale'],
+              sex: item['sex'],
+              view: item['view'],
+            ))
+        .toList();
+    product = list;
+  }
+
+  List<String> products = ["a", "ab", "ac", "ccca"];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+          onPressed: () {
+            query = '';
+          },
+          icon: const Icon(Icons.clear)),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          close(context, null);
+        },
+        icon: const Icon(Icons.arrow_back));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('products')
+          .where(TiengViet.parse("product_name"), isGreaterThanOrEqualTo: query)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        } else if (snapshot.hasData) {
+          final products = snapshot.data!.docs
+              .where((element) =>
+                  TiengViet.parse(element.get("product_name"))
+                          .toLowerCase()
+                          .contains(query.toLowerCase()) ==
+                      true &&
+                  query.isNotEmpty)
+              .map((doc) => Product.fromMap(doc.data()))
+              .toList();
+
+          return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (BuildContext context, int index) {
+                final product = products[index];
+
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => ProductDetail(product)));
+                  },
+                  child: ListTile(
+                    title: Text(product.productName.toLowerCase()),
+                  ),
+                );
+              });
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('products').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        } else if (snapshot.hasData) {
+          final products = snapshot.data!.docs
+              .where((element) =>
+                  TiengViet.parse(element.get("product_name"))
+                          .toLowerCase()
+                          .contains(query.toLowerCase()) ==
+                      true &&
+                  query.isNotEmpty)
+              .map((doc) => Product.fromMap(doc.data()))
+              .toList();
+
+          return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (BuildContext context, int index) {
+                final product = products[index];
+
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => ProductDetail(product)));
+                  },
+                  child: ListTile(
+                    title: Text(product.productName.toLowerCase()),
+                  ),
+                );
+              });
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

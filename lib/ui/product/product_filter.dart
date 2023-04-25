@@ -6,7 +6,6 @@ import 'package:money_formatter/money_formatter.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
-import '../../service/product_service.dart';
 import '../product/product_detail.dart';
 
 class ProductFilterView extends StatefulWidget {
@@ -19,12 +18,22 @@ class ProductFilterView extends StatefulWidget {
 class _ProductFilterViewState extends State<ProductFilterView> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return StreamBuilder<List<Product>>(
-        stream: ProductService.readProduct(),
+        stream: FirebaseFirestore.instance
+            .collection('products')
+            .snapshots()
+            .map((snapshot) => snapshot.docs
+                .where((item) =>
+                    item.get("type") == widget.product.type &&
+                    item.get('id') != widget.product.id &&
+                    item.get("sex") == widget.product.sex)
+                .map((doc) => Product.fromMap(doc.data()))
+                .toList()),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Text("Có lỗi xảy ra!");
-          } else if (snapshot.hasData) {
+          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             final product = snapshot.data!;
             return GridView(
               padding: const EdgeInsets.only(top: 3),
@@ -34,17 +43,23 @@ class _ProductFilterViewState extends State<ProductFilterView> {
               ),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              children: product
-                  .where((item) =>
-                      item.type == widget.product.type &&
-                      item.id != widget.product.id &&
-                      item.sex == widget.product.sex)
-                  .map(buidProduct)
-                  .toList(),
+              children: product.map(buidProduct).toList(),
             );
           } else {
-            return const Center(
-              child: Text("Không tìm thấy sản phẩm phù hợp nào!"),
+            return SizedBox(
+              height: width / 1.5,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image(
+                        image: const AssetImage("assets/images/no_item.png"),
+                        height: width / 3,
+                        width: width / 3),
+                    const Text("Không tìm thấy sản phẩm phù hợp.")
+                  ],
+                ),
+              ),
             );
           }
         });
@@ -52,6 +67,7 @@ class _ProductFilterViewState extends State<ProductFilterView> {
 
   Widget buidProduct(Product product) {
     final isfavorite = Provider.of<ProductManager>(context);
+    double height = MediaQuery.of(context).size.height;
     return SizedBox(
       height: 370,
       child: Container(
@@ -71,8 +87,11 @@ class _ProductFilterViewState extends State<ProductFilterView> {
                         MaterialPageRoute(
                             builder: (context) => ProductDetail(product)));
                   },
-                  child: Image.network(product.productUrl[0],
-                      height: 285, fit: BoxFit.cover),
+                  child: SizedBox(
+                    height: height / 3,
+                    child:
+                        Image.network(product.productUrl[0], fit: BoxFit.cover),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
@@ -143,8 +162,7 @@ class _ProductFilterViewState extends State<ProductFilterView> {
               ],
             ),
             Container(
-              margin: const EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              padding: const EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
               child: Text(
                 product.productName.toString(),
@@ -162,7 +180,7 @@ class _ProductFilterViewState extends State<ProductFilterView> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,

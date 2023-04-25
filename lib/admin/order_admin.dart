@@ -1,6 +1,4 @@
-import 'package:blackrose/admin/service/order_service.dart';
 import 'package:blackrose/admin/service/user_service.dart';
-import 'package:blackrose/models/order.dart';
 import 'package:blackrose/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -158,9 +156,11 @@ class _OrderAdminState extends State<OrderAdmin> {
                         DataCell(Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(order.docs[i].get("status") == 0
-                                ? "Chờ xác nhận"
-                                : "Đã xác nhận"),
+                            order.docs[i].get("status") != 4
+                                ? Text(order.docs[i].get("status") == 0
+                                    ? "Chờ xác nhận"
+                                    : "Đã xác nhận")
+                                : const Text(""),
                             order.docs[i].get("status") == 0
                                 ? TextButton(
                                     onPressed: () async {
@@ -171,10 +171,6 @@ class _OrderAdminState extends State<OrderAdmin> {
                                       var snapshot = await snap.get();
 
                                       for (var doc in snapshot.docs) {
-                                        print(order.docs[i]
-                                            .get("time")
-                                            .toDate()
-                                            .toString());
                                         if (doc.get("time") ==
                                             order.docs[i].get("time")) {
                                           doc.reference.update({
@@ -193,9 +189,14 @@ class _OrderAdminState extends State<OrderAdmin> {
                         DataCell(Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(order.docs[i].get("status") <= 1
-                                ? "Chờ vận chuyển"
-                                : "Đang giao"),
+                            order.docs[i].get("status") != 4 &&
+                                    order.docs[i].get("status") > 0
+                                ? Text(order.docs[i].get("status") <= 2
+                                    ? (order.docs[i].get("status") <= 1
+                                        ? "Chờ vận chuyển"
+                                        : "Đang giao")
+                                    : "Đã nhận")
+                                : const Text(""),
                             order.docs[i].get("status") == 1
                                 ? TextButton(
                                     onPressed: () async {
@@ -206,10 +207,6 @@ class _OrderAdminState extends State<OrderAdmin> {
                                       var snapshot = await snap.get();
 
                                       for (var doc in snapshot.docs) {
-                                        print(order.docs[i]
-                                            .get("time")
-                                            .toDate()
-                                            .toString());
                                         if (doc.get("time") ==
                                             order.docs[i].get("time")) {
                                           doc.reference.update({
@@ -243,7 +240,7 @@ class _OrderAdminState extends State<OrderAdmin> {
     );
   }
 
-  int index = 0;
+  //int index = 0;
   // DataRow _buildOrder(Orders order) {
   //   return DataRow(
   //     cells: [
